@@ -1,0 +1,73 @@
+# Python-related files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+env/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+*.egg
+
+# Flask and Python-specific
+instance/
+*.sqlite3
+*.db
+
+# Logs and debugging
+*.log
+*.pot
+
+# Environment variables and secrets
+*.env
+.env.*
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.sublime-workspace
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Test and coverage reports
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# Temporary/Backup Files
+*.bak
+*.swp
+
+# React/Frontend related
+node_modules/
+build/
+
+# Logs for npm/yarn
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python-related files (personal environment)
+.bash_logout
+.bashrc
+.profile
+.cache/
+.npm/
+.ssh/
+.sudo_as_admin_successful
+.vim/
+.viminfo
+
+# Additional files to ignore
+*.pem
+
