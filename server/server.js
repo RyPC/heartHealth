@@ -73,6 +73,26 @@ app.get("/api/add_data/:heart_rate", async (req, res) => {
     }
 });
 
+// API POST for clearing data
+app.post("/api/clear_data", async (req, res) => {
+    try {
+        // Define the structure of an empty JSON file
+        const emptyData = JSON.stringify(
+            { timestamps: [], heart_rates: [] },
+            null,
+            2
+        );
+
+        // Overwrite the data file with the empty structure
+        fs.writeFileSync("data/data.json", emptyData, "utf8");
+
+        res.json({ message: "All data cleared successfully." });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Failed to clear data." });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Server listening on ${PORT}`);
 });
