@@ -1,0 +1,7 @@
+{
+  "scripts": {
+    "start-client": "npm start --prefix client",
+    "start-server": "pm2 start server.js",
+    "start": "npm run start-client && npm run start-server"
+  }
+}

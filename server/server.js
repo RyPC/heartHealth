@@ -9,8 +9,7 @@ app.use(express.json());
 // Allow connection from port 3000 (client)
 app.use(
     cors({
-        origin: process.env.RECEIVER_URL,
-        credentials: true,
+        origin: "http://35.160.204.3:3000",
     })
 );
 
@@ -33,15 +32,26 @@ function isValidNumber(str) {
     return !isNaN(number) && str.trim() !== "" && !/^\s+$/.test(str); // check for empty or whitespace-only strings
 }
 
-// API POST data
-app.post("/api/add_data", (req, res) => {
+function getCurrentTimestamp() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0"); // +1 because getMonth() returns 0-11
+    const day = String(now.getDate()).padStart(2, "0");
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const seconds = String(now.getSeconds()).padStart(2, "0");
+
+    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+}
+
+// API "POST" (but using GET) data
+app.get("/api/add_data/:heart_rate", async (req, res) => {
     // Check for valid arguments
-    const { timestamp, heart_rate } = req.body;
+    const heart_rate = parseInt(req.params.heart_rate);
+    const timestamp = getCurrentTimestamp();
 
     try {
-        if (!isValidDate(timestamp))
-            return res.status(400).json({ message: "Invalid timestamp" });
-        if (!isValidNumber(heart_rate)) {
+        if (typeof heart_rate !== "number") {
             return res.status(400).json({ message: "Invalid heart_rate" });
         }
 
@@ -56,10 +66,10 @@ app.post("/api/add_data", (req, res) => {
         const new_data = JSON.stringify(json);
         fs.writeFileSync("data/data.json", new_data, "utf8");
 
-        res.json({ timestamp: timestamp, heart_rate, heart_rate });
+        res.json({ timestamp: timestamp, heart_rate: heart_rate });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Server error" });
+        res.status(401).json({ message: "Server error" });
     }
 });
 

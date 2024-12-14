@@ -11,15 +11,35 @@ import {
     Tooltip,
     Legend,
     ResponsiveContainer,
+    ReferenceDot,
 } from "recharts";
 import moment from "moment"; // To handle timestamp formatting
 
 const API_URL = process.env.REACT_APP_API_URL;
 
+const LOW_THRESH = 60;
+const HIGH_THRESH = 140;
+
+const PulsingReferenceDot = (props) => {
+    return (
+        <circle cx={props.cx} r="10" cy={props.cy} fill="red">
+            <animate
+                attributeName="r"
+                from="8"
+                to="20"
+                dur="1.5s"
+                begin="0s"
+                repeatCount="indefinite"
+            />
+        </circle>
+    );
+};
+
 function App() {
     const [timestamps, setTimestamps] = useState([]);
     const [heartRates, setHeartRates] = useState([]);
     const [healthData, setHealthData] = useState([]);
+    const [alerts, setAlerts] = useState(0);
 
     useEffect(() => {
         const getHealthData = async () => {
@@ -45,12 +65,29 @@ function App() {
         getHealthData();
     }, []);
 
+    useEffect(() => {
+        const countAlerts = () => {
+            return healthData.filter(
+                (dataPoint) =>
+                    dataPoint.heartRate < LOW_THRESH ||
+                    dataPoint.heartRate > HIGH_THRESH
+            ).length;
+        };
+
+        setAlerts(countAlerts());
+    }, [healthData]);
     return (
         <div className="app">
             <header className="app-header">
                 <h1>Health Monitor</h1>
             </header>
             <main className="app-main">
+                {alerts > 0 ? (
+                    <h2>
+                        {alerts} instance(s) of abnormal heartrates were found.
+                        Please refer to the graph.
+                    </h2>
+                ) : null}
                 <div className="graph-container">
                     {/* Graph */}
                     <ResponsiveContainer width="100%" height="100%">
@@ -93,6 +130,19 @@ function App() {
                                 ]}
                                 type="number"
                             />
+                            {healthData.map((dataPoint, index) =>
+                                dataPoint.heartRate < LOW_THRESH ||
+                                dataPoint.heartRate > HIGH_THRESH ? (
+                                    <ReferenceDot
+                                        key={index}
+                                        x={dataPoint.timestamp}
+                                        y={dataPoint.heartRate}
+                                        shape={PulsingReferenceDot}
+                                        fill={"red"}
+                                        stroke="none"
+                                    />
+                                ) : null
+                            )}
                             <Tooltip
                                 labelFormatter={(timestamp) =>
                                     moment(timestamp).format(
